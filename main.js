@@ -22,8 +22,8 @@ function renderTasks() {
       li.style.textDecoration = 'line-through'
     }
 
-    list.appendChild(span)
-    list.appendChild(button)
+    li.appendChild(span)
+    li.appendChild(button)
 
     list.appendChild(li)
   })
