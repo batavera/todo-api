@@ -12,16 +12,22 @@
     <p id="loading">Carregando...</p>
     <p id="error" style="display: none;">Erro ao carregar</p>
 
-    <div class="form">
+<div class="form">
   <input type="text" id="task-input" placeholder="Nova tarefa">
   <button id="add-btn">Adicionar</button>
 </div>
 
-  <p id="message"></p>
-  <p id="task-count"></p>
+<p id="message"></p>
+<p id="task-count"></p>
 
-  <ul id="task-list"></ul>
-  </div>
+<div class="filters">
+  <button id="filter-all">Todas</button>
+  <button id="filter-pending">Pendentes</button>
+  <button id="filter-completed">Concluídas</button>
+  <button id="clear-all">Limpar tudo</button>
+</div>
+
+<ul id="task-list"></ul>
 
   <script src="main.js"></script>
 </body>

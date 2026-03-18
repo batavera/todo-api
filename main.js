@@ -1,24 +1,48 @@
 let tasks = []
 
+let currentFilter = 'all'
+
 function renderTasks() {
   const list = document.getElementById('task-list')
 
   list.innerHTML = ''
 
-  tasks.forEach(task => {
+  let filteredTasks = tasks
+
+  if (currentFilter === 'pending') {
+    filteredTasks = tasks.filter(task => !task.completed)
+  }
+
+  if (currentFilter === 'completed') {
+    filteredTasks = tasks.filter(task => task.completed)
+  }
+
+  filteredTasks.forEach(task => {
     const li = document.createElement('li')
+    li.classList.add('task-item')
+
+    const actions = document.createElement('div')
+    actions.classList.add('task-actions')
 
     const span = document.createElement('span')
+    span.classList.add('task-text')
     span.textContent = task.title
 
     span.addEventListener('click', () => {
+      toggleTask(task.id)
+    })
+
+    const editButton = document.createElement('button')
+    editButton.textContent = 'Editar'
+
+    editButton.addEventListener('click', () => {
       editTask(task.id, span)
     })
 
-    const button = document.createElement('button')
-    button.textContent = 'X'
+    const deleteButton = document.createElement('button')
+    deleteButton.textContent = 'X'
 
-    button.addEventListener('click', () => {
+    deleteButton.addEventListener('click', () => {
       deleteTask(task.id)
     })
 
@@ -26,16 +50,42 @@ function renderTasks() {
       li.style.textDecoration = 'line-through'
     }
 
+    actions.appendChild(editButton)
+    actions.appendChild(deleteButton)
+
     li.appendChild(span)
-    li.appendChild(button)
+    li.appendChild(actions)
 
     list.appendChild(li)
   })
-    updateTaskCount()
+
+  if (tasks.length === 0) {
+  list.innerHTML = '<p>Nenhuma tarefa encontrada.</p>'
+}
+
+  updateTaskCount()
+  updateFilterButtons()
 }
 
 function deleteTask(id) {
+  const confirmDelete = confirm('Tem certeza que deseja excluir esta tarefa?')
+
+  if (!confirmDelete) return 
+
   tasks = tasks.filter(task => task.id !== id)
+  saveTasksToLocalStorage()
+  renderTasks()
+}
+
+function toggleTask(id) {
+  tasks = tasks.map(task => {
+    if (task.id === id) {
+      return { ...task, completed: !task.completed }
+    }
+    return task
+  })
+
+  saveTasksToLocalStorage()
   renderTasks()
 }
 
@@ -70,12 +120,54 @@ function saveEdit(id, inputElement) {
     return task
   })
 
+  saveTasksToLocalStorage()
   renderTasks()
 }
 
 function updateTaskCount() {
   const taskCount = document.getElementById('task-count')
-  taskCount.textContent = `Total de tarefas: ${tasks.length}`
+
+  if (taskCount) {
+    taskCount.textContent = `Total de tarefas: ${tasks.length}`
+  }
+}
+
+function updateFilterButtons() {
+  const allButton = document.getElementById('filter-all')
+  const pendingButton = document.getElementById('filter-pending')
+  const completedButton = document.getElementById('filter-completed')
+
+  allButton.classList.remove('active')
+  pendingButton.classList.remove('active')
+  completedButton.classList.remove('active')
+
+  if (currentFilter === 'all') {
+    allButton.classList.add('active')
+  }
+
+  if (currentFilter === 'pending') {
+    pendingButton.classList.add('active')
+  }
+
+  if (currentFilter === 'completed') {
+    completedButton.classList.add('active')
+  }
+}
+
+function saveTasksToLocalStorage() {
+  localStorage.setItem('tasks', JSON.stringify(tasks))
+}
+
+function loadTasksFromLocalStorage() {
+  const savedTasks = localStorage.getItem('tasks')
+
+  if (savedTasks) {
+    tasks = JSON.parse(savedTasks)
+    renderTasks()
+    return true
+  }
+
+  return false
 }
 
 async function loadTasks() {
@@ -95,6 +187,7 @@ async function loadTasks() {
     const data = await response.json()
 
     tasks = data
+    saveTasksToLocalStorage()
     renderTasks()
 
   } catch (err) {
@@ -105,20 +198,24 @@ async function loadTasks() {
   }
 }
 
-loadTasks()
+const hasLocalTasks = loadTasksFromLocalStorage()
+
+if (!hasLocalTasks) {
+  loadTasks()
+}
 
 async function addTask() {
   const input = document.getElementById('task-input')
   const button = document.getElementById('add-btn')
-  const message = document.getElementById('message') 
+  const message = document.getElementById('message')
   const title = input.value
 
-  if (message) { 
+  if (message) {
     message.textContent = ''
   }
 
   if (!title.trim()) {
-    if (message) { 
+    if (message) {
       message.textContent = 'Digite uma tarefa antes de adicionar.'
     }
     return
@@ -145,12 +242,13 @@ async function addTask() {
     const newTask = await response.json()
 
     tasks.unshift(newTask)
+    saveTasksToLocalStorage()
     renderTasks()
     input.value = ''
 
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error)
-    if (message) { 
+    if (message) {
       message.textContent = 'Erro ao adicionar tarefa.'
     }
   } finally {
@@ -164,7 +262,28 @@ const taskInput = document.getElementById('task-input')
 
 taskInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
-    e.preventDefault() 
+    e.preventDefault()
     addTask()
   }
+})
+
+document.getElementById('filter-all').addEventListener('click', () => {
+  currentFilter = 'all'
+  renderTasks()
+})
+
+document.getElementById('filter-pending').addEventListener('click', () => {
+  currentFilter = 'pending'
+  renderTasks()
+})
+
+document.getElementById('filter-completed').addEventListener('click', () => {
+  currentFilter = 'completed'
+  renderTasks()
+})
+
+document.getElementById('clear-all').addEventListener('click', () => {
+  tasks = []
+  saveTasksToLocalStorage()
+  renderTasks()
 })

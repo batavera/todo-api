@@ -88,3 +88,82 @@ h1 {
   font-size: 14px;
   color: #555;
 }
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background-color: #fff;
+}
+
+.task-text {
+  flex: 1;
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-actions button {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.task-actions button:first-child {
+  background-color: #3498db;
+  color: white;
+}
+
+.task-actions button:last-child {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.task-actions button:hover {
+  opacity: 0.9;
+}
+
+#message {
+  margin-top: 10px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+#task-count {
+  margin: 10px 0 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filters button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #eee;
+}
+
+.filters button:hover {
+  background-color: #ddd;
+}
+
+.filters button.active {
+  background-color: #333;
+  color: white;
+}
