@@ -4,8 +4,8 @@ Aplicação de lista de tarefas desenvolvida com HTML, CSS e JavaScript puro, co
 
 ## Demonstração
 
-Projeto publicado no GitHub Pages:  
-[https://github.com/batavera/todo-api.git](#)
+Em breve
+
 
 ## Funcionalidades
 
