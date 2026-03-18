@@ -11,6 +11,10 @@ function renderTasks() {
     const span = document.createElement('span')
   span.textContent = task.title
 
+  span.addEventListener('click', () => {
+    editTask(task.id, span)
+  }) 
+
     const button = document.createElement('button')
   button.textContent = 'X'
 
@@ -31,6 +35,38 @@ function renderTasks() {
 
 function deleteTask(id) {
     tasks = tasks.filter(task => task.id !== id)
+    renderTasks()
+}
+
+function editTask(id, spanElement) {
+    const input = document.createElement('input')
+    input.value = spanElement.textContent
+
+    spanElement.replaceWith(input)
+
+    input.focus()
+
+    input.addEventListener(keypress, (e) => {
+        if (e.key === 'Enter') {
+            saveEdit(id, input)
+        }
+    })
+    inputAddEventListener('blur', () => {
+        saveEdit(id, input)
+    })
+}
+
+function saveEdit(id, inputElement) {
+    const newTitle = inputElement.value.trim()
+
+    if (!newTitle) return
+
+    tasks = tasks.map(task => {
+        if (task.id === id) {
+            return { ...task, title: newTitle }
+        }
+        return task
+    })
     renderTasks()
 }
 
