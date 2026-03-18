@@ -46,12 +46,12 @@ function editTask(id, spanElement) {
 
     input.focus()
 
-    input.addEventListener(keypress, (e) => {
+    input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             saveEdit(id, input)
         }
     })
-    inputAddEventListener('blur', () => {
+    input.AddEventListener('blur', () => {
         saveEdit(id, input)
     })
 }
