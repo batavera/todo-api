@@ -8,14 +8,28 @@ function renderTasks() {
   tasks.forEach(task => {
     const li = document.createElement('li')
 
-    li.textContent = task.title
+    const span = document.createElement('span')
+  span.textContent = task.title
+
+    const button = document.createElement('button')
+  button.textContent = 'X'
+
+  button.addEventListener('click', () => {
+    deleteTask(task.id)
+  })
 
     if (task.completed) {
       li.style.textDecoration = 'line-through'
     }
 
-    list.appendChild(li)
+    list.appendChild(span)
+    list.appendChild(button)
   })
+}
+
+function deleteTask(id) {
+    tasks = tasks.filter(task => task.id !== id)
+    renderTasks()
 }
 
 async function loadTasks() {
