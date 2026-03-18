@@ -51,7 +51,7 @@ function editTask(id, spanElement) {
             saveEdit(id, input)
         }
     })
-    input.AddEventListener('blur', () => {
+    input.addEventListener('blur', () => {
         saveEdit(id, input)
     })
 }
@@ -103,9 +103,15 @@ loadTasks()
 async function addTask() {
   const input = document.getElementById('task-input')
   const button = document.getElementById('add-btn')
+  const message = document.getElementById('message')
   const title = input.value
 
-  if (!title.trim()) return
+  message.textContent = ''
+
+  if (!title.trim()) {
+    message.textContent = 'Digite uma tarefa antes de adicionar.'
+    return
+  }
 
   button.disabled = true
 
@@ -128,13 +134,11 @@ async function addTask() {
     const newTask = await response.json()
 
     tasks.unshift(newTask)
-
     renderTasks()
-
     input.value = ''
-
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error)
+    message.textContent = 'Erro ao adicionar tarefa.'
   } finally {
     button.disabled = false
   }
@@ -143,3 +147,11 @@ async function addTask() {
 
 
 document.getElementById('add-btn').addEventListener('click', addTask)
+
+  const taskInput = document.getElementById('task-input')
+
+  taskInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        addTask()
+    }
+})
