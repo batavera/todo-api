@@ -9,18 +9,18 @@ function renderTasks() {
     const li = document.createElement('li')
 
     const span = document.createElement('span')
-  span.textContent = task.title
+    span.textContent = task.title
 
-  span.addEventListener('click', () => {
-    editTask(task.id, span)
-  }) 
+    span.addEventListener('click', () => {
+      editTask(task.id, span)
+    })
 
     const button = document.createElement('button')
-  button.textContent = 'X'
+    button.textContent = 'X'
 
-  button.addEventListener('click', () => {
-    deleteTask(task.id)
-  })
+    button.addEventListener('click', () => {
+      deleteTask(task.id)
+    })
 
     if (task.completed) {
       li.style.textDecoration = 'line-through'
@@ -31,43 +31,51 @@ function renderTasks() {
 
     list.appendChild(li)
   })
+    updateTaskCount()
 }
 
 function deleteTask(id) {
-    tasks = tasks.filter(task => task.id !== id)
-    renderTasks()
+  tasks = tasks.filter(task => task.id !== id)
+  renderTasks()
 }
 
 function editTask(id, spanElement) {
-    const input = document.createElement('input')
-    input.value = spanElement.textContent
+  const input = document.createElement('input')
+  input.value = spanElement.textContent
 
-    spanElement.replaceWith(input)
+  spanElement.replaceWith(input)
 
-    input.focus()
+  input.focus()
 
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            saveEdit(id, input)
-        }
-    })
-    input.addEventListener('blur', () => {
-        saveEdit(id, input)
-    })
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      saveEdit(id, input)
+    }
+  })
+
+  input.addEventListener('blur', () => {
+    saveEdit(id, input)
+  })
 }
 
 function saveEdit(id, inputElement) {
-    const newTitle = inputElement.value.trim()
+  const newTitle = inputElement.value.trim()
 
-    if (!newTitle) return
+  if (!newTitle) return
 
-    tasks = tasks.map(task => {
-        if (task.id === id) {
-            return { ...task, title: newTitle }
-        }
-        return task
-    })
-    renderTasks()
+  tasks = tasks.map(task => {
+    if (task.id === id) {
+      return { ...task, title: newTitle }
+    }
+    return task
+  })
+
+  renderTasks()
+}
+
+function updateTaskCount() {
+  const taskCount = document.getElementById('task-count')
+  taskCount.textContent = `Total de tarefas: ${tasks.length}`
 }
 
 async function loadTasks() {
@@ -81,13 +89,12 @@ async function loadTasks() {
     const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
 
     if (!response.ok) {
-      throw new Error('Erro ao carregar tarefas') 
+      throw new Error('Erro ao carregar tarefas')
     }
 
     const data = await response.json()
 
     tasks = data
-
     renderTasks()
 
   } catch (err) {
@@ -103,13 +110,17 @@ loadTasks()
 async function addTask() {
   const input = document.getElementById('task-input')
   const button = document.getElementById('add-btn')
-  const message = document.getElementById('message')
+  const message = document.getElementById('message') 
   const title = input.value
 
-  message.textContent = ''
+  if (message) { 
+    message.textContent = ''
+  }
 
   if (!title.trim()) {
-    message.textContent = 'Digite uma tarefa antes de adicionar.'
+    if (message) { 
+      message.textContent = 'Digite uma tarefa antes de adicionar.'
+    }
     return
   }
 
@@ -136,22 +147,24 @@ async function addTask() {
     tasks.unshift(newTask)
     renderTasks()
     input.value = ''
+
   } catch (error) {
     console.error('Erro ao adicionar tarefa:', error)
-    message.textContent = 'Erro ao adicionar tarefa.'
+    if (message) { 
+      message.textContent = 'Erro ao adicionar tarefa.'
+    }
   } finally {
     button.disabled = false
   }
 }
 
-
-
 document.getElementById('add-btn').addEventListener('click', addTask)
 
-  const taskInput = document.getElementById('task-input')
+const taskInput = document.getElementById('task-input')
 
-  taskInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        addTask()
-    }
+taskInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault() 
+    addTask()
+  }
 })

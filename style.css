@@ -82,3 +82,9 @@ h1 {
     font-size: 14px;
     color: #e74c3c;
 }
+
+#task-count {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #555;
+}
