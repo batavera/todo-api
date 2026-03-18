@@ -24,6 +24,8 @@ function renderTasks() {
 
     list.appendChild(span)
     list.appendChild(button)
+
+    list.appendChild(li)
   })
 }
 
