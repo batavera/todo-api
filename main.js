@@ -29,7 +29,7 @@ async function loadTasks() {
     const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
 
     if (!response.ok) {
-      throw new Error('Erro na requisição')
+      throw new Error('Erro ao carregar tarefas') 
     }
 
     const data = await response.json()
@@ -47,3 +47,47 @@ async function loadTasks() {
 }
 
 loadTasks()
+
+async function addTask() {
+  const input = document.getElementById('task-input')
+  const button = document.getElementById('add-btn')
+  const title = input.value
+
+  if (!title.trim()) return
+
+  button.disabled = true
+
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: title,
+        completed: false
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Erro ao criar tarefa')
+    }
+
+    const newTask = await response.json()
+
+    tasks.unshift(newTask)
+
+    renderTasks()
+
+    input.value = ''
+
+  } catch (error) {
+    console.error('Erro ao adicionar tarefa:', error)
+  } finally {
+    button.disabled = false
+  }
+}
+
+
+
+document.getElementById('add-btn').addEventListener('click', addTask)
