@@ -47,7 +47,7 @@ function renderTasks() {
     })
 
     if (task.completed) {
-      li.style.textDecoration = 'line-through'
+      span.style.textDecoration = 'line-through'
     }
 
     actions.appendChild(editButton)
@@ -59,9 +59,11 @@ function renderTasks() {
     list.appendChild(li)
   })
 
-  if (tasks.length === 0) {
-  list.innerHTML = '<p>Nenhuma tarefa encontrada.</p>'
-}
+  if (filteredTasks.length === 0) {
+    const emptyMessage = document.createElement('li')
+    emptyMessage.textContent = 'Nenhuma tarefa encontrada.'
+    list.appendChild(emptyMessage)
+  }
 
   updateTaskCount()
   updateFilterButtons()
@@ -70,7 +72,7 @@ function renderTasks() {
 function deleteTask(id) {
   const confirmDelete = confirm('Tem certeza que deseja excluir esta tarefa?')
 
-  if (!confirmDelete) return 
+  if (!confirmDelete) return
 
   tasks = tasks.filter(task => task.id !== id)
   saveTasksToLocalStorage()
@@ -160,10 +162,22 @@ function saveTasksToLocalStorage() {
 
 function loadTasksFromLocalStorage() {
   const savedTasks = localStorage.getItem('tasks')
+  const loading = document.getElementById('loading')
 
   if (savedTasks) {
     tasks = JSON.parse(savedTasks)
+
+    tasks = tasks.map(task => ({
+      ...task,
+      id: String(task.id)
+    }))
+
     renderTasks()
+
+    if (loading) {
+      loading.style.display = 'none'
+    }
+
     return true
   }
 
@@ -186,7 +200,11 @@ async function loadTasks() {
 
     const data = await response.json()
 
-    tasks = data
+    tasks = data.map(task => ({
+      ...task,
+      id: String(task.id)
+    }))
+
     saveTasksToLocalStorage()
     renderTasks()
 
@@ -241,7 +259,12 @@ async function addTask() {
 
     const newTask = await response.json()
 
-    tasks.unshift(newTask)
+    const taskWithUniqueId = {
+      ...newTask,
+      id: crypto.randomUUID()
+    }
+
+    tasks.unshift(taskWithUniqueId)
     saveTasksToLocalStorage()
     renderTasks()
     input.value = ''
